@@ -3,11 +3,19 @@ import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import Modal from 'react-bootstrap/Modal'
 import { Container, Row, Col, Dropdown } from 'react-bootstrap'
-import Test from './Test'
-
+import Test from './DropDownDatePicker'
+import { useTodos } from '../context/todosContext'
+// import { useTodos } from '../context/todosContext'
+import Labels from './Labels'
 const AddTodo = ({ show, handleClose }) => {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
+  const [selectedLabel, setSelectedLabel] = useState('')
 
+  const handleLabelSelect = (label) => {
+    setSelectedLabel(label)
+  }
+
+  // const { labels } = useTodos()
   const handleDateOptionChange = (option) => {
     // Define a function to set the date based on the selected option
     switch (option) {
@@ -42,6 +50,7 @@ const AddTodo = ({ show, handleClose }) => {
   useEffect(() => {
     console.log(date)
   }, [date])
+
   return (
     <Modal show={show} onHide={handleClose}>
       {/* <Modal.Header closeButton>
@@ -57,37 +66,34 @@ const AddTodo = ({ show, handleClose }) => {
             <Form.Label>Description</Form.Label>
             <Form.Control as='textarea' placeholder='Description' rows={3} />
           </Form.Group>
-
           <Row>
             <Col>
               <Test />
             </Col>
             <Col>
-            
-              {/* <Dropdown variant='outline-dark' className='d-inline mx-2'>
-                <Dropdown.Toggle id='dropdown-autoclose-true'>
-                  Select Date Option
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item
-                    onClick={() => handleDateOptionChange('today')}
-                  >
-                    Today
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={() => handleDateOptionChange('yesterday')}
-                  >
-                    Yesterday
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={() => handleDateOptionChange('weekend')}
-                  >
-                    Weekend
-                  </Dropdown.Item>
-                  {/* Add more options if needed */}
-                </Dropdown.Menu>
-              </Dropdown> */}
+              <div>
+                <Labels
+                  selectedLabel={selectedLabel}
+                  onSelectLabel={handleLabelSelect}
+                />
+                {/* <p>Selected Label: {selectedLabel}</p> */}
+              </div>
             </Col>
+            {/* <Col>
+              <Dropdown className='d-inline mx-2'>
+                <Dropdown.Toggle id='dropdown-autoclose-true'>
+                  Default Dropdown
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                  {labels.map((label, index) => (
+                    <Dropdown.Item key={label.id} href='#'>
+                      {label.title}
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
+            </Col> */}
           </Row>
         </Form>
 
