@@ -1,12 +1,22 @@
 import { createContext, useContext, useReducer } from 'react'
-
+import { faLockOpen, faFileShield } from '@fortawesome/free-solid-svg-icons'
 // Initial state for the todos
 const initialState = {
   todos: [],
   labels: [
-    { title: 'Label 1', id: 1 },
-    { title: 'Label 2', id: 2 },
-    { title: 'Label 3', id: 3 }
+    { title: 'Label 1', id: 1, color: 'red' },
+    { title: 'Label 2', id: 2, color: 'orange' },
+    { title: 'Label 3', id: 3, color: 'blue' }
+  ],
+  priorities: [
+    { title: 'Priority 1', id: 1, color: 'red' },
+    { title: 'Priority 2', id: 2, color: 'orange' },
+    { title: 'Priority 3', id: 3, color: 'blue' },
+    { title: 'Priority 4', id: 4, color: 'black' }
+  ],
+  projects: [
+    { title: 'Inbox', id: 1, color: 'blue', icon: faFileShield },
+    { title: 'Health', id: 2, color: 'black', icon: faLockOpen }
   ]
 }
 
@@ -26,20 +36,15 @@ const todosReducer = (state, action) => {
         ...state,
         labels: [...state.labels, action.payload]
       }
+    case 'ADD_PRIORITY':
+      return {
+        ...state,
+        priorities: [...state.priorities, action.payload]
+      }
     default:
       return state
   }
 }
-
-// const TodosProvider = ({ children }) => {
-//   const [state, dispatch] = useReducer(todosReducer, initialState)
-
-//     <TodosContext value={state}>
-//   return (
-//       <TodosDispatchContext value={dispatch}>{children}</TodosDispatchContext>
-//     </TodosContext>
-//   )
-// }
 
 const TodosProvider = ({ children }) => {
   const [state, dispatch] = useReducer(todosReducer, initialState)

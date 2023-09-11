@@ -3,139 +3,161 @@ import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import Modal from 'react-bootstrap/Modal'
 import { Container, Row, Col, Dropdown } from 'react-bootstrap'
-import Test from './DropDownDatePicker'
 import { useTodos } from '../context/todosContext'
-// import { useTodos } from '../context/todosContext'
 import Labels from './Labels'
+import DropDownDatePicker from './DropDownDatePicker'
+import Priorities from './Priority'
+import Projects from './Projects'
+import { useTodosDispatch } from '../context/todosContext'
 const AddTodo = ({ show, handleClose }) => {
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
+  const { projects } = useTodos()
+  const [selectedDate, setSelectedDate] = useState('')
   const [selectedLabel, setSelectedLabel] = useState('')
+  const [selectedPriority, setSelectedPriority] = useState('')
+  const [selectedProject, setSelectedProject] = useState(projects[0]?.id)
+  const [task, setTask] = useState({
+    taskname: '',
+    description: ''
+  })
+  const todosDispatch = useTodosDispatch()
 
+  const handleDateSelect = (date) => {
+    setSelectedDate(date)
+  }
   const handleLabelSelect = (label) => {
     setSelectedLabel(label)
   }
-
-  // const { labels } = useTodos()
-  const handleDateOptionChange = (option) => {
-    // Define a function to set the date based on the selected option
-    switch (option) {
-      case 'today':
-        setDate(new Date().toISOString().split('T')[0])
-        break
-      case 'yesterday':
-        const yesterday = new Date()
-        yesterday.setDate(yesterday.getDate() - 1)
-        setDate(yesterday.toISOString().split('T')[0])
-        break
-      case 'weekend':
-        const today = new Date()
-        const dayOfWeek = today.getDay()
-        if (dayOfWeek === 0) {
-          // If today is Sunday, select Saturday
-          today.setDate(today.getDate() - 1)
-        } else if (dayOfWeek === 6) {
-          // If today is Saturday, select Friday
-          today.setDate(today.getDate() - 2)
-        } else {
-          // Select the upcoming Saturday
-          today.setDate(today.getDate() + (6 - dayOfWeek))
-        }
-        setDate(today.toISOString().split('T')[0])
-        break
-      default:
-        // Handle other options if needed
-        break
-    }
+  const handlePrioritySelect = (priority) => {
+    setSelectedPriority(priority)
   }
-  useEffect(() => {
-    console.log(date)
-  }, [date])
+
+  const handleProjectSelect = (priority) => {
+    setSelectedProject(priority)
+  }
+  const handleInputChange = (event) => {
+    const { name, value } = event.target
+    setTask((prevTask) => ({
+      ...prevTask,
+      [name]: value
+    }))
+  }
+
+  const saveHandler = () => {
+    console.log(
+      `task ==> ${task} ,selectedDate ==>${selectedDate} and selectedLabel ${selectedLabel}
+      selectedPriority ===>${selectedPriority}
+      `
+    )
+
+    const newTask = { ...task, selectedDate, selectedPriority, selectedLabel }
+    todosDispatch({ type: 'ADD_TODO', payload: newTask })
+
+    console.log('save')
+  }
 
   return (
     <Modal show={show} onHide={handleClose}>
-      {/* <Modal.Header closeButton>
-        <Modal.Title>Modal heading</Modal.Title>
-      </Modal.Header> */}
       <Modal.Body>
         <Form>
           <Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
             <Form.Label>Task Name</Form.Label>
-            <Form.Control type='text' placeholder='Task name' autoFocus />
+            <Form.Control
+              placeholder='Task name'
+              autoFocus
+              type='text'
+              name='taskname'
+              value={task.taskname}
+              onChange={handleInputChange}
+            />
           </Form.Group>
           <Form.Group className='mb-3' controlId='exampleForm.ControlTextarea1'>
             <Form.Label>Description</Form.Label>
-            <Form.Control as='textarea' placeholder='Description' rows={3} />
+            <Form.Control
+              type='text'
+              name='description'
+              value={task.description}
+              onChange={handleInputChange}
+              as='textarea'
+              placeholder='Description'
+              rows={3}
+            />
           </Form.Group>
           <Row>
             <Col>
-              <Test />
+              <DropDownDatePicker
+                selectedDate={selectedDate}
+                handleDateSelect={handleDateSelect}
+              />
             </Col>
+
             <Col>
               <div>
                 <Labels
-                  selectedLabel={selectedLabel}
-                  onSelectLabel={handleLabelSelect}
+                  selectedLabelId={selectedLabel}
+                  onSelectedLabel={handleLabelSelect}
                 />
                 {/* <p>Selected Label: {selectedLabel}</p> */}
               </div>
             </Col>
-            {/* <Col>
-              <Dropdown className='d-inline mx-2'>
-                <Dropdown.Toggle id='dropdown-autoclose-true'>
-                  Default Dropdown
-                </Dropdown.Toggle>
 
-                <Dropdown.Menu>
-                  {labels.map((label, index) => (
-                    <Dropdown.Item key={label.id} href='#'>
-                      {label.title}
-                    </Dropdown.Item>
-                  ))}
-                </Dropdown.Menu>
-              </Dropdown>
-            </Col> */}
+            <Col>
+              <Priorities
+                selectedPriorityId={selectedPriority}
+                onSelectedPriority={handlePrioritySelect}
+              />
+            </Col>
           </Row>
         </Form>
-
-        {/* 
-
-        <Form.Group controlId='dob'>
-          <Form.Label>Select Date</Form.Label>
-          <Form.Control
-            onChange={(event) => {
-              setDate(event.target.value)
-            }}
-            value={date}
-            type='date'
-            name='dob'
-            variant='outline-success'
-            placeholder='Date of Birth'
-          />
-        </Form.Group>
-
-        <Dropdown variant='outline-dark' className='d-inline mx-2'>
-          <Dropdown.Toggle id='dropdown-autoclose-true'>
-            Default Dropdown
-          </Dropdown.Toggle>
-
-          <Dropdown.Menu>
-            <Dropdown.Item href='#'>Menu Item</Dropdown.Item>
-            <Dropdown.Item href='#'>Menu Item</Dropdown.Item>
-            <Dropdown.Item href='#'>Menu Item</Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown> */}
-        {/* <Button variant='outline-dark' size='sm'>
-          Primary
-        </Button>{' '} */}
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant='secondary' onClick={handleClose}>
+      <Modal.Footer className='justify-content-between'>
+        <Col md={8}>
+          <Projects
+            selectedProjectId={selectedProject}
+            onSelectedProject={handleProjectSelect}
+          />
+        </Col>
+        <Col>
+          <Button variant='danger' onClick={saveHandler}>
+            Add
+          </Button>
+        </Col>
+        <Col>
+          <Button variant='dark' onClick={handleClose}>
+            Close
+          </Button>
+        </Col>
+      </Modal.Footer>
+      {/* <Modal.Footer
+        style={{
+          display: 'flex'
+        }}
+      >
+        {/* <div
+          style={{
+            // display: 'flex',
+            justifyContent: 'flex-start'
+          }}
+        >
+          <Projects
+            selectedProject={selectedProject}
+            onSelectedProject={handleProjectSelect}
+          />
+        </div> */}
+      {/* <div
+          style={{
+            // display: 'flex',
+            justifyContent: 'flex-end'
+          }}
+        >
+         <Button variant='danger' onClick={saveHandler}>
+          Add
+        </Button>
+
+        <Button variant='dark' onClick={handleClose}>
           Close
         </Button>
-        <Button variant='primary' onClick={handleClose}>
-          Save Changes
-        </Button>
-      </Modal.Footer>
+        {/* </div> */}
+      {/* </Modal.Footer> */}
     </Modal>
   )
 }

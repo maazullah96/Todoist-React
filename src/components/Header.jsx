@@ -8,9 +8,12 @@ import { useState } from 'react'
 import AddTodo from './AddTodo'
 import useToggle from '../hooks/useToggle'
 import SideBar from './SideBar'
+import { ThemeContext } from '../context/themeContext'
+import { useContext } from 'react'
+import ThemeToggle from './ThemeToggle'
 function Header() {
   //   const [show, setShow] = useState(false)
-
+  const { theme } = useContext(ThemeContext)
   const { show: showAddModal, toggle: toggleAddModal } = useToggle({
     defaultValue: false
   })
@@ -70,7 +73,9 @@ function Header() {
                   style={{ color: '#ff0000' }}
                 />
               </Nav.Link>
-              <Nav.Link href='#deets'>More deets</Nav.Link>
+              <Nav.Link href='#deets'>
+                <ThemeToggle />
+              </Nav.Link>
               <Nav.Link eventKey={2} href='#memes'>
                 Dank memes
               </Nav.Link>

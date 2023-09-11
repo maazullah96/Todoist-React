@@ -8,6 +8,7 @@ const CustomToggle = forwardRef(({ children, onClick }, ref) => (
       onClick(e)
     }}
     variant='outline-secondary'
+    size='sm'
   >
     {children}
   </Button>
